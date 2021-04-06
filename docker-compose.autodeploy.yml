@@ -1,0 +1,28 @@
+version: "3.7"
+
+services: 
+  database:
+    image: postgres:11.5-alpine
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: fieldbot
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    ports: 
+      - "127.0.0.1:5432:5432"
+  
+  web:
+    image: registry.gitlab.com/piyiotisk/fieldbot-server:latest
+    depends_on:
+      - database
+    restart: always
+    ports:
+      - "127.0.0.1:3000:3000"
+    links:
+      - "database"
+    environment:
+      DB_HOST: database
+      ENVIRONMENT: production
+      PORT: 3000
